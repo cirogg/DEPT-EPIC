@@ -14,9 +14,10 @@ import com.cirogg.deptepicchallenge.utils.Const
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
-class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
+class ImagesAdapter(val onClick: (ImagesResponse) -> Unit, val allImagesLoadaed: () -> Unit) :
+    RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
-    private val differCallback = object : DiffUtil.ItemCallback<ImagesResponse>(){
+    private val differCallback = object : DiffUtil.ItemCallback<ImagesResponse>() {
         override fun areItemsTheSame(
             oldItem: ImagesResponse,
             newItem: ImagesResponse
@@ -34,7 +35,8 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapte
 
     }
 
-    val diff = AsyncListDiffer(this,differCallback)
+    val diff = AsyncListDiffer(this, differCallback)
+    var counterTotal = 0
 
     override fun getItemCount(): Int {
         return diff.currentList.size
@@ -45,7 +47,8 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val binding = ItemGridImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemGridImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ImageViewHolder(binding)
     }
 
@@ -54,11 +57,15 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapte
 
         fun bind(image: ImagesResponse) {
             binding.run {
-                Picasso.get().load("${Const.IMAGE_URL}${image.getCleanDate()}/jpg/${image.image}.jpg")
+                Picasso.get()
+                    .load("${Const.IMAGE_URL}${image.getCleanDate()}/jpg/${image.image}.jpg")
                     .placeholder(R.drawable.ic_palceholder)
                     .into(binding.photoGrid, object : Callback {
                         override fun onSuccess() {
-
+                            counterTotal--
+                            if (counterTotal == 0) {
+                                allImagesLoadaed()
+                            }
                         }
 
                         override fun onError(e: Exception?) {
@@ -68,11 +75,16 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapte
             }
             setImage(image)
         }
+
         private fun setImage(image: ImagesResponse) {
             itemView.setOnClickListener {
                 onClick(image)
             }
         }
 
-        }
+    }
+
+    fun setCounter(total: Int) {
+        counterTotal = total
+    }
 }

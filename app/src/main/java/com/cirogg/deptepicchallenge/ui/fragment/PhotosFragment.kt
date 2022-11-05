@@ -1,17 +1,19 @@
 package com.cirogg.deptepicchallenge.ui.fragment
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.cirogg.deptepicchallenge.R
 import com.cirogg.deptepicchallenge.databinding.FragmentPhotosBinding
 import com.cirogg.deptepicchallenge.model.ImagesList
+import com.cirogg.deptepicchallenge.model.UrlList
 import com.cirogg.deptepicchallenge.model.response.ImagesResponse
+import com.cirogg.deptepicchallenge.ui.activity.MainActivity
+import com.cirogg.deptepicchallenge.utils.Const
+import com.cirogg.deptepicchallenge.utils.Const.Companion.IMAGE_URL
 
 class PhotosFragment : Fragment() {
 
@@ -21,7 +23,12 @@ class PhotosFragment : Fragment() {
     private var imageList: ImagesList? = null
     private val args: PhotosFragmentArgs by navArgs()
 
-    private val imagesAdapter by lazy { ImagesAdapter{image->seeImage(image)} }
+    private val imagesAdapter by lazy {
+        ImagesAdapter({ image -> seeImage(image) },
+            { setPlayOnToolbar() })
+    }
+
+    private var menuToolbar: Menu? = null
 
 
     override fun onCreateView(
@@ -30,6 +37,7 @@ class PhotosFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentPhotosBinding.inflate(inflater, container, false)
+        setToolbar()
         return binding.root
     }
 
@@ -49,6 +57,7 @@ class PhotosFragment : Fragment() {
     private fun setImages() {
         imageList = args.imageList
         imageList.let { imagesAdapter.diff.submitList(it?.imagesList) }
+        imagesAdapter.setCounter(imageList?.imagesList?.size ?: 0)
     }
 
     private fun seeImage(image: ImagesResponse) {
@@ -56,6 +65,51 @@ class PhotosFragment : Fragment() {
             putParcelable("imageSingular", image)
         }
         findNavController().navigate(R.id.action_photosFragment_to_singularImageFragment, bundle)
+    }
+
+    private fun setPlayOnToolbar() {
+        menuToolbar?.findItem(R.id.play)?.isVisible = true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.play -> {
+                navigateToPlayer()
+                true
+            }
+            else -> true
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.info_image_menu, menu)
+        menuToolbar = menu
+        menu.findItem(R.id.showinfo).isVisible = false
+        menu.findItem(R.id.play).isVisible = false
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setToolbar() {
+        with(requireActivity() as MainActivity) {
+            this.setSupportActionBar(this.binding.toolbar)
+        }
+        setHasOptionsMenu(true)
+    }
+
+    private fun navigateToPlayer() {
+        var listOfUrls = mutableListOf<String>()
+        var urlList = UrlList(listOfUrls)
+        imageList?.imagesList?.let {
+            it.let {
+                for (imagesResponse in it) {
+                    listOfUrls.add("${IMAGE_URL}${imagesResponse?.getCleanDate()}/jpg/${imagesResponse?.image}.jpg")
+                }
+            }
+        }
+        val bundle = Bundle().apply {
+            putParcelable("urlList", urlList)
+        }
+        findNavController().navigate(R.id.action_photosFragment_to_playerFragment, bundle)
     }
 
 }

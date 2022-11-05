@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_photosFragment_to_singularImageFragment"
             app:destination="@id/singularImageFragment" />
+        <action
+            android:id="@+id/action_photosFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
     <fragment
         android:id="@+id/singularImageFragment"
@@ -42,6 +45,15 @@
         <argument
             android:name="imageSingular"
             app:argType="com.cirogg.deptepicchallenge.model.response.ImagesResponse" />
+    </fragment>
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.cirogg.deptepicchallenge.ui.fragment.PlayerFragment"
+        android:label="fragment_player"
+        tools:layout="@layout/fragment_player" >
+        <argument
+            android:name="urlList"
+            app:argType="com.cirogg.deptepicchallenge.model.UrlList" />
     </fragment>
 
 

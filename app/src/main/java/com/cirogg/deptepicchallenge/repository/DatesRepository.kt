@@ -35,12 +35,12 @@ class DatesRepository(
 
     private fun handlePhotosResponse(
         date: String,
-        availablePhotosResponse: Response<ArrayList<ImagesResponse>>
+        imagesResponse: Response<ArrayList<ImagesResponse>>
     ): DatesResponse {
-        if (availablePhotosResponse.isSuccessful) {
-            availablePhotosResponse.body()?.let { resultResponse ->
+        if (imagesResponse.isSuccessful) {
+            imagesResponse.body()?.let { resultResponse ->
                 if (resultResponse.isNotEmpty()) {
-                    return DatesResponse(date, availablePhotosResponse.body(),FetchStatus.READY)
+                    return DatesResponse(date, imagesResponse.body(),FetchStatus.READY)
                 }else{
                     return DatesResponse(date, null,FetchStatus.ERROR)
                 }
