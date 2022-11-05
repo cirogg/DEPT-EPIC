@@ -30,6 +30,18 @@
         <argument
             android:name="imageList"
             app:argType="com.cirogg.deptepicchallenge.model.ImagesList" />
+        <action
+            android:id="@+id/action_photosFragment_to_singularImageFragment"
+            app:destination="@id/singularImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/singularImageFragment"
+        android:name="com.cirogg.deptepicchallenge.ui.fragment.SingularImageFragment"
+        android:label="fragment_singular_image"
+        tools:layout="@layout/fragment_singular_image">
+        <argument
+            android:name="imageSingular"
+            app:argType="com.cirogg.deptepicchallenge.model.response.ImagesResponse" />
     </fragment>
 
 

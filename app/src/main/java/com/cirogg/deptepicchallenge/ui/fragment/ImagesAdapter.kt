@@ -1,5 +1,6 @@
 package com.cirogg.deptepicchallenge.ui.fragment
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -13,7 +14,7 @@ import com.cirogg.deptepicchallenge.utils.Const
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
-class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
+class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
     private val differCallback = object : DiffUtil.ItemCallback<ImagesResponse>(){
         override fun areItemsTheSame(
@@ -23,6 +24,7 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
             return oldItem.identifier == newItem.identifier
         }
 
+        @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(
             oldItem: ImagesResponse,
             newItem: ImagesResponse
@@ -63,6 +65,12 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
                         }
                     })
+            }
+            setImage(image)
+        }
+        private fun setImage(image: ImagesResponse) {
+            itemView.setOnClickListener {
+                onClick(image)
             }
         }
 
