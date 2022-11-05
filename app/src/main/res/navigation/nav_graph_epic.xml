@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_epic"
+    app:startDestination="@id/datesListFragment">
+
+    <fragment
+        android:id="@+id/datesListFragment"
+        android:name="com.cirogg.deptepicchallenge.ui.fragment.DateListFragment"
+        android:label="fragment_dates_list"
+        tools:layout="@layout/fragment_date_list">
+        <action
+            android:id="@+id/action_datesListFragment_to_photosFragment"
+            app:destination="@id/photosFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_datesListFragment_to_photosFragment2"
+            app:destination="@id/photosFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/photosFragment"
+        android:name="com.cirogg.deptepicchallenge.ui.fragment.PhotosFragment"
+        android:label="fragment_photos"
+        tools:layout="@layout/fragment_photos" />
+
+
+</navigation>
