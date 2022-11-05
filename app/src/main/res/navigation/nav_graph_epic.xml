@@ -26,7 +26,11 @@
         android:id="@+id/photosFragment"
         android:name="com.cirogg.deptepicchallenge.ui.fragment.PhotosFragment"
         android:label="fragment_photos"
-        tools:layout="@layout/fragment_photos" />
+        tools:layout="@layout/fragment_photos">
+        <argument
+            android:name="imageList"
+            app:argType="com.cirogg.deptepicchallenge.model.ImagesList" />
+    </fragment>
 
 
 </navigation>

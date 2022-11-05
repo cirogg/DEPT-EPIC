@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cirogg.deptepicchallenge.R
 import com.cirogg.deptepicchallenge.databinding.FragmentDateListBinding
+import com.cirogg.deptepicchallenge.model.ImagesList
 import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.ui.viewmodel.DatesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -19,7 +21,7 @@ class DateListFragment : Fragment() {
 
     private val viewModel by viewModel<DatesViewModel>()
 
-    private val datesAdapter by lazy { DatesAdapter() }
+    private val datesAdapter by lazy { DatesAdapter{imageList -> goToDetailDateFragment(imageList)} }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +62,22 @@ class DateListFragment : Fragment() {
                 updateListOfDates(r)
                 binding.progressBarDates.visibility = View.GONE
 
+            }
+        }
+    }
+
+    private fun goToDetailDateFragment(imageList: ImagesList) {
+        imageList.imagesList?.let {
+            if (it.isEmpty()){
+
+            }else{
+                val bundle = Bundle().apply {
+                    putParcelable("imageList", imageList)
+                }
+                findNavController().navigate(
+                    R.id.action_datesListFragment_to_photosFragment,
+                    bundle
+                )
             }
         }
     }

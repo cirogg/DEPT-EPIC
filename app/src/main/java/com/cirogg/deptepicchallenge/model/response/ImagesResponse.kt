@@ -10,4 +10,8 @@ class ImagesResponse(
     val identifier: String?,
     val image: String?
 ) : Parcelable {
+
+    fun getCleanDate(): String {
+        return date?.replace("-", "/")?.split(" ")?.first().toString()
+    }
 }
