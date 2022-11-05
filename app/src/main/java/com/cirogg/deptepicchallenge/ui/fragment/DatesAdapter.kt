@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cirogg.deptepicchallenge.R
 import com.cirogg.deptepicchallenge.databinding.ItemDateBinding
+import com.cirogg.deptepicchallenge.model.FetchStatus
 import com.cirogg.deptepicchallenge.model.response.DatesResponse
 
 class DatesAdapter: RecyclerView.Adapter<DatesAdapter.DateViewHolder>()  {
@@ -30,6 +31,39 @@ class DatesAdapter: RecyclerView.Adapter<DatesAdapter.DateViewHolder>()  {
 
         fun bind(date: DatesResponse) {
             binding.dateTextView.text = date.date
+            isDownloading(date.downStatus?: FetchStatus.WAITING, binding)
+        }
+    }
+
+    fun isDownloading(
+        state: FetchStatus,
+        binding: ItemDateBinding
+    ){
+        when(state){
+            FetchStatus.WAITING -> {
+                binding.waitingImageView.visibility = View.VISIBLE
+                binding.downloadingProgressBar.visibility = View.INVISIBLE
+                binding.readyImageView.visibility = View.INVISIBLE
+                binding.emptyImageImageView.visibility = View.INVISIBLE
+            }
+            FetchStatus.DOWNLOADING -> {
+                binding.waitingImageView.visibility = View.INVISIBLE
+                binding.downloadingProgressBar.visibility = View.VISIBLE
+                binding.readyImageView.visibility = View.INVISIBLE
+                binding.emptyImageImageView.visibility = View.INVISIBLE
+            }
+            FetchStatus.READY -> {
+                binding.waitingImageView.visibility = View.INVISIBLE
+                binding.downloadingProgressBar.visibility = View.INVISIBLE
+                binding.readyImageView.visibility = View.VISIBLE
+                binding.emptyImageImageView.visibility = View.INVISIBLE
+            }
+            FetchStatus.ERROR -> {
+                binding.waitingImageView.visibility = View.INVISIBLE
+                binding.downloadingProgressBar.visibility = View.INVISIBLE
+                binding.readyImageView.visibility = View.INVISIBLE
+                binding.emptyImageImageView.visibility = View.VISIBLE
+            }
         }
     }
 

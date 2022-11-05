@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cirogg.deptepicchallenge.R
 import com.cirogg.deptepicchallenge.databinding.FragmentDateListBinding
+import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.ui.viewmodel.DatesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -49,7 +50,30 @@ class DateListFragment : Fragment() {
                 if (response != null) {
                     datesAdapter.setData(response)
                     binding.progressBarDates.visibility = View.GONE
+                    viewModel.getImagesByDate()
                 }
+            }
+        }
+
+        viewModel.datesLoad?.observe(viewLifecycleOwner) { r ->
+            r.date.let { date ->
+                updateListOfDates(r)
+                binding.progressBarDates.visibility = View.GONE
+
+            }
+        }
+    }
+
+    private fun updateListOfDates(currentDate: DatesResponse){
+        val fullDateList = viewModel.dates.value
+        fullDateList.let {
+            val i = fullDateList?.withIndex()?.find { currentDate.date == it.value.date }?.index
+            i?.let {
+                fullDateList[i].apply {
+                    downStatus = currentDate.downStatus
+                    dateImages = currentDate.dateImages
+                }
+                datesAdapter.setData(fullDateList)
             }
         }
     }
