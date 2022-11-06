@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cirogg.deptepicchallenge.R
 import com.cirogg.deptepicchallenge.databinding.ItemGridImageBinding
-import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.model.response.ImagesResponse
 import com.cirogg.deptepicchallenge.utils.Const
 import com.squareup.picasso.Callback
