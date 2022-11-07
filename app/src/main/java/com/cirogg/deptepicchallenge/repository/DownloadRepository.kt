@@ -8,10 +8,11 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.cirogg.deptepicchallenge.AnimatedGifEncoder
 import com.cirogg.deptepicchallenge.api.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.ResponseBody
 import java.io.*
 import java.io.File.separator
 
@@ -19,6 +20,8 @@ import java.io.File.separator
 class DownloadRepository(
     private val retrofitInstance: RetrofitInstance
 ) {
+
+    private val listOfBitmaps = mutableListOf<Bitmap>()
 
     fun downloadAndSave(date: String, imageName: String): Flow<Bitmap> = flow {
         val call = retrofitInstance.epicApi.getPhoto(date, imageName)
@@ -35,9 +38,10 @@ class DownloadRepository(
     fun saveFile(bitmap: Bitmap?, date: String, imageName: String, context: Context): Boolean {
         try {
             if (android.os.Build.VERSION.SDK_INT >= 29) {
-                val values = contentValues()
-                values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/$date")
+                val values = contentValues(imageName)
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + date.replace("/", "-"))
                 values.put(MediaStore.Images.Media.IS_PENDING, true)
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, imageName)
                 // RELATIVE_PATH and IS_PENDING are introduced in API 29.
 
                 val uri: Uri? = context.contentResolver.insert(
@@ -52,7 +56,6 @@ class DownloadRepository(
             } else {
                 val directory =
                     File(Environment.getExternalStorageDirectory().toString() + separator + date.replace("/", "-"))
-                // getExternalStorageDirectory is deprecated in API 29
 
                 if (!directory.exists()) {
                     directory.mkdirs()
@@ -61,7 +64,7 @@ class DownloadRepository(
                 val file = File(directory, fileName)
                 saveImageToStream(bitmap!!, FileOutputStream(file))
                 if (file.absolutePath != null) {
-                    val values = contentValues()
+                    val values = contentValues(imageName)
                     values.put(MediaStore.Images.Media.DATA, file.absolutePath)
                     // .DATA is deprecated in API 29
                     context.contentResolver.insert(
@@ -79,7 +82,7 @@ class DownloadRepository(
 
     }
 
-    private fun contentValues(): ContentValues {
+    private fun contentValues(imageName: String): ContentValues {
         val values = ContentValues()
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
@@ -91,10 +94,25 @@ class DownloadRepository(
         if (outputStream != null) {
             try {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                listOfBitmaps.add(bitmap)
                 outputStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+
+
+    fun generateGIF(): Flow<ByteArray>? = flow {
+        val bos = ByteArrayOutputStream()
+        val encoder = AnimatedGifEncoder()
+        encoder.start(bos)
+        for (bitmap in listOfBitmaps) {
+            encoder.addFrame(bitmap)
+        }
+        encoder.finish()
+        listOfBitmaps.clear()
+        emit(bos.toByteArray())
+    }
+
 }

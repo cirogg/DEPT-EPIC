@@ -90,5 +90,7 @@ dependencies {
     //PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
+
 
 }

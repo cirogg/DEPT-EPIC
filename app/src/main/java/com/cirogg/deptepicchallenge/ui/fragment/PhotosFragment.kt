@@ -13,11 +13,11 @@ import com.cirogg.deptepicchallenge.model.ImagesList
 import com.cirogg.deptepicchallenge.model.UrlList
 import com.cirogg.deptepicchallenge.model.response.ImagesResponse
 import com.cirogg.deptepicchallenge.ui.activity.MainActivity
-import com.cirogg.deptepicchallenge.ui.viewmodel.DatesViewModel
 import com.cirogg.deptepicchallenge.ui.viewmodel.DownloadViewModel
-import com.cirogg.deptepicchallenge.utils.Const
 import com.cirogg.deptepicchallenge.utils.Const.Companion.IMAGE_URL
+import kotlinx.coroutines.flow.collect
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class PhotosFragment : Fragment() {
 
@@ -56,10 +56,14 @@ class PhotosFragment : Fragment() {
 
     private fun initObservers(){
         viewModel.totalImagesCounter.observe(viewLifecycleOwner) {
-            Log.d("SIZEEEEE", "$it listSize: ${imageList!!.imagesList!!.size}")
-            if (it == imageList!!.imagesList!!.size){
-                setPlayOnToolbar()
+            if (it == imageList!!.imagesList!!.size && viewModel.readyToPlay.value == false) {
+                viewModel.getGifFromByteArray()
             }
+        }
+
+        viewModel.byteArrayToGif.observe(viewLifecycleOwner) {
+            viewModel.readyToPlay.value = true
+            setPlayOnToolbar()
         }
     }
 
@@ -113,7 +117,6 @@ class PhotosFragment : Fragment() {
 
     private fun navigateToPlayer() {
         var listOfUrls = mutableListOf<String>()
-        var urlList = UrlList(listOfUrls)
         imageList?.imagesList?.let {
             it.let {
                 for (imagesResponse in it) {
@@ -122,7 +125,7 @@ class PhotosFragment : Fragment() {
             }
         }
         val bundle = Bundle().apply {
-            putParcelable("urlList", urlList)
+            putParcelable("urlList", UrlList(viewModel.byteArrayToGif.value!!) )
         }
         findNavController().navigate(R.id.action_photosFragment_to_playerFragment, bundle)
     }

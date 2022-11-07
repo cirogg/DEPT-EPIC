@@ -11,8 +11,10 @@ import com.cirogg.deptepicchallenge.model.ImagesList
 import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.repository.DownloadRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -21,6 +23,13 @@ class DownloadViewModel(
 ) : ViewModel() {
 
     val totalImagesCounter = MutableLiveData<Int>().apply { value = 0 }
+    val byteArrayToGif = MutableLiveData<ByteArray>()
+    val readyToPlay = MutableLiveData<Boolean>()
+
+
+    init {
+        readyToPlay.value = false
+    }
 
     fun downloadImage(imagesList: ImagesList, context: Context) {
         viewModelScope.launch {
@@ -41,6 +50,22 @@ class DownloadViewModel(
                 }
             }
         }
+    }
+
+    fun getTotalImagesCoutner(): Flow<Int> = flow {
+        emit(totalImagesCounter.value!!)
+    }
+
+    fun getGifFromByteArray(){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                repository.generateGIF()?.collect {
+                    readyToPlay.postValue(true)
+                    byteArrayToGif.postValue(it)
+                }
+            }
+        }
+
     }
 
 }

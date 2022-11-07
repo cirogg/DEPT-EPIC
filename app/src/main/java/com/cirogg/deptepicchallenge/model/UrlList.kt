@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class UrlList(val listOfUrls: List<String>) : Parcelable
+data class UrlList(val byteArray: ByteArray) : Parcelable
