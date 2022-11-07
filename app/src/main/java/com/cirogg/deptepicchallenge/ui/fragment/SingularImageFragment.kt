@@ -55,6 +55,7 @@ class SingularImageFragment : Fragment() {
         inflater.inflate(R.menu.info_image_menu, menu)
         menu.findItem(R.id.showinfo).isVisible = true
         menu.findItem(R.id.play).isVisible = false
+        menu.findItem(R.id.loading).isVisible = false
         super.onCreateOptionsMenu(menu, inflater)
     }
 

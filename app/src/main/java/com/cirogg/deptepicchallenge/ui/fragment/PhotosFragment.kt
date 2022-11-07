@@ -88,6 +88,8 @@ class PhotosFragment : Fragment() {
 
     private fun setPlayOnToolbar() {
         menuToolbar?.findItem(R.id.play)?.isVisible = true
+        menuToolbar?.findItem(R.id.loading)?.isVisible = false
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -105,6 +107,11 @@ class PhotosFragment : Fragment() {
         menuToolbar = menu
         menu.findItem(R.id.showinfo).isVisible = false
         menu.findItem(R.id.play).isVisible = false
+        menu.findItem(R.id.loading).isVisible = true
+        if ( viewModel.readyToPlay.value == true) {
+            menu.findItem(R.id.play).isVisible = true
+            menu.findItem(R.id.loading).isVisible = false
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 

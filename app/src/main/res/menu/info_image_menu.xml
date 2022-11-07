@@ -12,4 +12,10 @@
         android:title="Play"
         android:icon="@drawable/ic_play"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/loading"
+        android:title="Loading"
+        android:icon="@drawable/ic_baseline_downloading_24"
+        app:showAsAction="always"/>
 </menu>
