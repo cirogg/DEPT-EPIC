@@ -11,7 +11,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class RetrofitInstance {
-    companion object {
         private val retrofit by lazy {
             val logging = HttpLoggingInterceptor()
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -32,5 +31,5 @@ class RetrofitInstance {
         val epicApi by lazy {
             retrofit.create(EpicApi::class.java)
         }
-    }
+
 }

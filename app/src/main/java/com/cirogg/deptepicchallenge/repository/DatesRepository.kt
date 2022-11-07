@@ -1,5 +1,6 @@
 package com.cirogg.deptepicchallenge.repository
 
+import android.util.Log
 import com.cirogg.deptepicchallenge.api.EpicApi
 import com.cirogg.deptepicchallenge.api.RetrofitInstance
 import com.cirogg.deptepicchallenge.model.FetchStatus
@@ -7,14 +8,17 @@ import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.model.response.ImagesResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.ResponseBody
 import retrofit2.Response
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class DatesRepository(
-    private val epicApi: EpicApi
+    private val retrofitInstance: RetrofitInstance
 ) {
 
     fun getAvailableDates(): Flow<MutableList<DatesResponse>> = flow {
-        val call = RetrofitInstance.epicApi.getAvailableDates()
+        val call = retrofitInstance.epicApi.getAvailableDates()
         val dates = call.body()
         if (call.isSuccessful) {
             emit(dates!!)
@@ -24,7 +28,7 @@ class DatesRepository(
     }
 
     fun getImagesByDate(date: String): Flow<DatesResponse> = flow {
-        val call = RetrofitInstance.epicApi.getAvailableImages(date)
+        val call = retrofitInstance.epicApi.getAvailableImages(date)
         val images = call.body()
         if (call.isSuccessful) {
             emit(handlePhotosResponse(date, call))

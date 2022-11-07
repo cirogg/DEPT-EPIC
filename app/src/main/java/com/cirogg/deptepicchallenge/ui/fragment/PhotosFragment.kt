@@ -1,6 +1,7 @@
 package com.cirogg.deptepicchallenge.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -12,8 +13,11 @@ import com.cirogg.deptepicchallenge.model.ImagesList
 import com.cirogg.deptepicchallenge.model.UrlList
 import com.cirogg.deptepicchallenge.model.response.ImagesResponse
 import com.cirogg.deptepicchallenge.ui.activity.MainActivity
+import com.cirogg.deptepicchallenge.ui.viewmodel.DatesViewModel
+import com.cirogg.deptepicchallenge.ui.viewmodel.DownloadViewModel
 import com.cirogg.deptepicchallenge.utils.Const
 import com.cirogg.deptepicchallenge.utils.Const.Companion.IMAGE_URL
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PhotosFragment : Fragment() {
 
@@ -24,11 +28,12 @@ class PhotosFragment : Fragment() {
     private val args: PhotosFragmentArgs by navArgs()
 
     private val imagesAdapter by lazy {
-        ImagesAdapter({ image -> seeImage(image) },
-            { setPlayOnToolbar() })
+        ImagesAdapter{ image -> seeImage(image) }
     }
 
     private var menuToolbar: Menu? = null
+
+    private val viewModel by viewModel<DownloadViewModel>()
 
 
     override fun onCreateView(
@@ -45,6 +50,17 @@ class PhotosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
         setImages()
+        initObservers()
+        downloadAndSaveImage()
+    }
+
+    private fun initObservers(){
+        viewModel.totalImagesCounter.observe(viewLifecycleOwner) {
+            Log.d("SIZEEEEE", "$it listSize: ${imageList!!.imagesList!!.size}")
+            if (it == imageList!!.imagesList!!.size){
+                setPlayOnToolbar()
+            }
+        }
     }
 
     private fun setUpRecyclerView() {
@@ -57,7 +73,6 @@ class PhotosFragment : Fragment() {
     private fun setImages() {
         imageList = args.imageList
         imageList.let { imagesAdapter.diff.submitList(it?.imagesList) }
-        imagesAdapter.setCounter(imageList?.imagesList?.size ?: 0)
     }
 
     private fun seeImage(image: ImagesResponse) {
@@ -111,5 +126,10 @@ class PhotosFragment : Fragment() {
         }
         findNavController().navigate(R.id.action_photosFragment_to_playerFragment, bundle)
     }
+
+    private fun downloadAndSaveImage() {
+        viewModel.downloadImage(imageList!!, requireContext())
+    }
+
 
 }

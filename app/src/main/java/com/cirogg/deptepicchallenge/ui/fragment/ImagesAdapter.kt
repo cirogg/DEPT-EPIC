@@ -13,7 +13,7 @@ import com.cirogg.deptepicchallenge.utils.Const
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
-class ImagesAdapter(val onClick: (ImagesResponse) -> Unit, val allImagesLoadaed: () -> Unit) :
+class ImagesAdapter(val onClick: (ImagesResponse) -> Unit) :
     RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
     private val differCallback = object : DiffUtil.ItemCallback<ImagesResponse>() {
@@ -35,7 +35,6 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit, val allImagesLoadaed:
     }
 
     val diff = AsyncListDiffer(this, differCallback)
-    var counterTotal = 0
 
     override fun getItemCount(): Int {
         return diff.currentList.size
@@ -61,10 +60,7 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit, val allImagesLoadaed:
                     .placeholder(R.drawable.ic_palceholder)
                     .into(binding.photoGrid, object : Callback {
                         override fun onSuccess() {
-                            counterTotal--
-                            if (counterTotal == 0) {
-                                allImagesLoadaed()
-                            }
+
                         }
 
                         override fun onError(e: Exception?) {
@@ -83,7 +79,4 @@ class ImagesAdapter(val onClick: (ImagesResponse) -> Unit, val allImagesLoadaed:
 
     }
 
-    fun setCounter(total: Int) {
-        counterTotal = total
-    }
 }

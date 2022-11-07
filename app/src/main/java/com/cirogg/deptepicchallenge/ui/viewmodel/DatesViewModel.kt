@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cirogg.deptepicchallenge.model.FetchStatus
+import com.cirogg.deptepicchallenge.model.ImagesList
 import com.cirogg.deptepicchallenge.model.response.DatesResponse
 import com.cirogg.deptepicchallenge.repository.DatesRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,7 +24,7 @@ class DatesViewModel(
     val datesLoad: LiveData<DatesResponse>? get() = _datesLoad
 
     private val getPhotosExceptionHandler = CoroutineExceptionHandler { _, _ ->
-        _datesLoad.postValue( datesLoad?.value.apply { this?.downStatus = FetchStatus.ERROR }
+        _datesLoad.postValue(datesLoad?.value.apply { this?.downStatus = FetchStatus.ERROR }
         )
     }
 
@@ -35,18 +36,21 @@ class DatesViewModel(
         }
     }
 
-    fun getImagesByDate(){
+    fun getImagesByDate() {
         viewModelScope.launch {
             withContext(Dispatchers.IO + getPhotosExceptionHandler) {
                 _dates.value.let {
                     it?.forEach { date ->
                         repo.getImagesByDate(date.date).collect { response ->
                             _datesLoad.postValue(response)
+                            return@collect
                         }
                     }
                 }
             }
         }
     }
+
+
 
 }
